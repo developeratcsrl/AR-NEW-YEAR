@@ -4,31 +4,44 @@
   <meta charset="UTF-8">
   <title>AR Happy New Year</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { margin: 0; overflow: hidden; }
+  <link rel="icon" href="data:,"> <style>
+    body { margin: 0; overflow: hidden; font-family: sans-serif; }
     #startAR {
       position: absolute;
-      bottom: 20px;
+      bottom: 50px;
       left: 50%;
       transform: translateX(-50%);
-      padding: 12px 20px;
+      padding: 15px 30px;
       font-size: 18px;
+      font-weight: bold;
       background: gold;
-      border: none;
-      border-radius: 8px;
+      border: 2px solid #b8860b;
+      border-radius: 50px;
       cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
+    #startAR:hover { background: #ffd700; scale: 1.05; }
   </style>
 </head>
 <body>
 
 <button id="startAR">Start AR</button>
 
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.152/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152/examples/jsm/"
+    }
+  }
+</script>
+
 <script type="module">
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.152/build/three.module.js";
-import { ARButton } from "https://cdn.jsdelivr.net/npm/three@0.152/examples/jsm/webxr/ARButton.js";
-import { FontLoader } from "https://cdn.jsdelivr.net/npm/three@0.152/examples/jsm/loaders/FontLoader.js";
-import { TextGeometry } from "https://cdn.jsdelivr.net/npm/three@0.152/examples/jsm/geometries/TextGeometry.js";
+import * as THREE from "three";
+import { ARButton } from "three/addons/webxr/ARButton.js";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 
 let camera, scene, renderer;
 
@@ -36,43 +49,63 @@ init();
 
 function init() {
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera();
+
+  // 70 degree FOV is standard for mobile AR
+  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.xr.enabled = true;
   document.body.appendChild(renderer.domElement);
 
+  // Set up the AR Button
+  const arButton = ARButton.createButton(renderer);
   document.getElementById("startAR").addEventListener("click", () => {
-    document.body.appendChild(ARButton.createButton(renderer));
+    arButton.click(); // Triggers the hidden WebXR button
   });
 
+  // Lighting: Important for 3D materials to show up
   const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
   scene.add(light);
 
+  // Load Font and Create Text
   const loader = new FontLoader();
   loader.load(
     "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
     function (font) {
       const textGeometry = new TextGeometry("HAPPY NEW YEAR", {
         font: font,
-        size: 0.25,
+        size: 0.2,
         height: 0.05,
       });
 
-      const textMaterial = new THREE.MeshStandardMaterial({
-        color: 0xffd700
-      });
+      // Center the geometry so it rotates/positions around its middle
+      textGeometry.center();
 
+      const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700 });
       const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-      textMesh.position.set(-0.8, 0, -2);
+      
+      // Position it 1 meter in front of the start position (-1 on Z)
+      textMesh.position.set(0, 0, -1);
       scene.add(textMesh);
     }
   );
 
-  renderer.setAnimationLoop(() => {
-    renderer.render(scene, camera);
-  });
+  // Handle resizing for orientation changes
+  window.addEventListener('resize', onWindowResize);
+
+  renderer.setAnimationLoop(render);
+}
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function render() {
+  renderer.render(scene, camera);
 }
 </script>
 
