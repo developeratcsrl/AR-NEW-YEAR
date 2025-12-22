@@ -273,7 +273,7 @@ function render(timestamp) {
 
 
 
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -390,6 +390,123 @@ function render(timestamp, frame) {
         reticle.visible = false;
       }
     }
+  }
+
+  renderer.render(scene, camera);
+}
+</script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AR New Year Celebration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:,">
+  <style>
+    body { margin: 0; overflow: hidden; font-family: sans-serif; background: #000; }
+    #startAR {
+      position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+      padding: 15px 30px; font-size: 18px; font-weight: bold;
+      background: linear-gradient(to right, #ffd700, #ff8c00);
+      border: none; border-radius: 50px; cursor: pointer; z-index: 10;
+      color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+
+<button id="startAR">START CELEBRATION</button>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.152/build/three.module.js",
+      "three/addons/": "https://cdn.innerWidth/npm/three@0.152/examples/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+import * as THREE from "three";
+import { ARButton } from "three/addons/webxr/ARButton.js";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+
+let camera, scene, renderer, textMesh, sparklerLight, particles;
+
+init();
+
+function init() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.xr.enabled = true;
+  document.body.appendChild(renderer.domElement);
+
+  document.body.appendChild(ARButton.createButton(renderer));
+
+  // 1. LIGHTING FOR CELEBRATION
+  const ambient = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
+  scene.add(ambient);
+
+  // Moving "Sparkler" light
+  sparklerLight = new THREE.PointLight(0xffaa00, 2, 5);
+  scene.add(sparklerLight);
+
+  // 2. LOAD TEXT
+  const loader = new FontLoader();
+  loader.load("https://threejs.org/examples/fonts/helvetiker_bold.typeface.json", (font) => {
+    const geometry = new TextGeometry("HAPPY\n2025", {
+      font: font, size: 0.15, height: 0.04, bevelEnabled: true, bevelSize: 0.01
+    });
+    geometry.center();
+    const material = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.2 });
+    textMesh = new THREE.Mesh(geometry, material);
+    textMesh.position.set(0, 0, -1);
+    scene.add(textMesh);
+  });
+
+  // 3. ADD FIREWORK PARTICLES
+  const pGeometry = new THREE.BufferGeometry();
+  const pCount = 100;
+  const positions = new Float32Array(pCount * 3);
+  for (let i = 0; i < pCount * 3; i++) positions[i] = (Math.random() - 0.5) * 2;
+  pGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  
+  const pMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.02, transparent: true });
+  particles = new THREE.Points(pGeometry, pMaterial);
+  particles.position.set(0, 0, -1.2);
+  scene.add(particles);
+
+  renderer.setAnimationLoop(render);
+}
+
+function render(time) {
+  const t = time * 0.001;
+
+  if (textMesh) {
+    textMesh.rotation.y = Math.sin(t) * 0.2;
+    // Glow effect
+    sparklerLight.position.set(Math.cos(t * 2), Math.sin(t * 3), -0.8);
+  }
+
+  if (particles) {
+    // Make particles "explode" upwards
+    particles.position.y = (t % 2) * 0.5;
+    particles.material.opacity = 1 - (t % 2) / 2;
   }
 
   renderer.render(scene, camera);
