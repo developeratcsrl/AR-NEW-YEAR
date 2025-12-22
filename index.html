@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AR Happy New Year</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #startAR {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 20px;
+      font-size: 18px;
+      background: gold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<button id="startAR">Start AR</button>
+
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.152/build/three.module.js";
+import { ARButton } from "https://cdn.jsdelivr.net/npm/three@0.152/examples/jsm/webxr/ARButton.js";
+import { FontLoader } from "https://cdn.jsdelivr.net/npm/three@0.152/examples/jsm/loaders/FontLoader.js";
+import { TextGeometry } from "https://cdn.jsdelivr.net/npm/three@0.152/examples/jsm/geometries/TextGeometry.js";
+
+let camera, scene, renderer;
+
+init();
+
+function init() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera();
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.xr.enabled = true;
+  document.body.appendChild(renderer.domElement);
+
+  document.getElementById("startAR").addEventListener("click", () => {
+    document.body.appendChild(ARButton.createButton(renderer));
+  });
+
+  const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+  scene.add(light);
+
+  const loader = new FontLoader();
+  loader.load(
+    "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
+    function (font) {
+      const textGeometry = new TextGeometry("HAPPY NEW YEAR", {
+        font: font,
+        size: 0.25,
+        height: 0.05,
+      });
+
+      const textMaterial = new THREE.MeshStandardMaterial({
+        color: 0xffd700
+      });
+
+      const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+      textMesh.position.set(-0.8, 0, -2);
+      scene.add(textMesh);
+    }
+  );
+
+  renderer.setAnimationLoop(() => {
+    renderer.render(scene, camera);
+  });
+}
+</script>
+
+</body>
+</html>
