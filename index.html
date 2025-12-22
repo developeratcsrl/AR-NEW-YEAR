@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -105,6 +105,161 @@ function onWindowResize() {
 }
 
 function render() {
+  renderer.render(scene, camera);
+}
+</script>
+
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AR Happy New Year - Pro Version</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:,">
+  <style>
+    body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; background-color: #000; }
+    
+    /* Improved UI Button */
+    #startAR {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 16px 32px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #000;
+      background: linear-gradient(45deg, #ffd700, #fffacd);
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    #startAR:hover {
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 15px 25px rgba(255, 215, 0, 0.3);
+    }
+    #startAR:active { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<button id="startAR">Enter New Year AR</button>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.152/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152/examples/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+import * as THREE from "three";
+import { ARButton } from "three/addons/webxr/ARButton.js";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+
+let camera, scene, renderer, textMesh;
+
+init();
+
+function init() {
+  scene = new THREE.Scene();
+
+  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.xr.enabled = true;
+  document.body.appendChild(renderer.domElement);
+
+  // AR Activation
+  const arButton = ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] });
+  document.getElementById("startAR").addEventListener("click", () => {
+    arButton.click();
+  });
+
+  // LIGHTING SETUP
+  // Ambient light for general visibility
+  const ambientLight = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+  scene.add(ambientLight);
+
+  // Directional light to create highlights on the "Gold"
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+  directionalLight.position.set(0.2, 1, 1);
+  scene.add(directionalLight);
+
+  // TEXT CREATION
+  const loader = new FontLoader();
+  loader.load(
+    "https://threejs.org/examples/fonts/helvetiker_bold.typeface.json",
+    function (font) {
+      const textGeometry = new TextGeometry("2025\nHAPPY NEW YEAR", {
+        font: font,
+        size: 0.15,
+        height: 0.04,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 0.01,
+        bevelSize: 0.005,
+        bevelSegments: 5
+      });
+
+      textGeometry.center();
+
+      // Shiny Gold Material
+      const textMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xffd700,
+        metalness: 0.7,
+        roughness: 0.2
+      });
+
+      textMesh = new THREE.Mesh(textGeometry, textMaterial);
+      
+      // Place it slightly in front and slightly down
+      textMesh.position.set(0, 0, -1);
+      scene.add(textMesh);
+    }
+  );
+
+  window.addEventListener('resize', onWindowResize);
+  renderer.setAnimationLoop(render);
+}
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function render(timestamp) {
+  if (textMesh) {
+    // 1. Slow Rotation
+    textMesh.rotation.y = timestamp / 2000;
+
+    // 2. Floating "Bobbing" Motion
+    // We use Math.sin to create a smooth up-and-down wave
+    textMesh.position.y = Math.sin(timestamp / 1000) * 0.05;
+  }
+
   renderer.render(scene, camera);
 }
 </script>
