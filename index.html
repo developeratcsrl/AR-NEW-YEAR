@@ -119,7 +119,7 @@ function render() {
 
 
 
-
+<!-- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -264,5 +264,136 @@ function render(timestamp) {
 }
 </script>
 
+</body>
+</html> -->
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AR New Year - Tap to Place</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; overflow: hidden; font-family: sans-serif; }
+    #instructions {
+      position: absolute; top: 10px; width: 100%; text-align: center;
+      color: white; z-index: 10; pointer-events: none; text-shadow: 1px 1px 2px black;
+    }
+  </style>
+</head>
+<body>
+
+<div id="instructions">Scan the floor and tap to place the text!</div>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.152/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152/examples/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+import * as THREE from "three";
+import { ARButton } from "three/addons/webxr/ARButton.js";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+
+let camera, scene, renderer, textMesh, reticle;
+let hitTestSource = null;
+let hitTestSourceRequested = false;
+
+init();
+
+function init() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.xr.enabled = true;
+  document.body.appendChild(renderer.domElement);
+
+  // Enable Hit Test feature
+  document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
+
+  const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+  scene.add(light);
+
+  // 1. Create the Reticle (the placement ring)
+  reticle = new THREE.Mesh(
+    new THREE.RingGeometry(0.1, 0.12, 32).rotateX(-Math.PI / 2),
+    new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+  );
+  reticle.visible = false;
+  reticle.matrixAutoUpdate = false; // We will update its position manually
+  scene.add(reticle);
+
+  // 2. Load the Text
+  const loader = new FontLoader();
+  loader.load("https://threejs.org/examples/fonts/helvetiker_bold.typeface.json", (font) => {
+    const geometry = new TextGeometry("2025\nHAPPY NEW YEAR", {
+      font: font, size: 0.15, height: 0.05
+    });
+    geometry.center();
+    textMesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: 0xffd700 }));
+    textMesh.visible = false; // Hide it until the user taps
+    scene.add(textMesh);
+  });
+
+  // 3. Handle the Tap (Select) event
+  const controller = renderer.xr.getController(0);
+  controller.addEventListener('select', () => {
+    if (reticle.visible && textMesh) {
+      textMesh.position.setFromMatrixPosition(reticle.matrix);
+      textMesh.visible = true;
+      // Make text face the camera
+      textMesh.rotation.y = camera.rotation.y;
+    }
+  });
+  scene.add(controller);
+
+  renderer.setAnimationLoop(render);
+}
+
+function render(timestamp, frame) {
+  if (frame) {
+    const referenceSpace = renderer.xr.getReferenceSpace();
+    const session = renderer.xr.getSession();
+
+    // Request hit test source once
+    if (!hitTestSourceRequested) {
+      session.requestReferenceSpace('viewer').then((viewerSpace) => {
+        session.requestHitTestSource({ space: viewerSpace }).then((source) => {
+          hitTestSource = source;
+        });
+      });
+      hitTestSourceRequested = true;
+    }
+
+    // If we have a hit test source, check for surfaces
+    if (hitTestSource) {
+      const hitTestResults = frame.getHitTestResults(hitTestSource);
+      if (hitTestResults.length > 0) {
+        const hit = hitTestResults[0];
+        reticle.visible = true;
+        reticle.matrix.fromArray(hit.getPose(referenceSpace).transform.matrix);
+      } else {
+        reticle.visible = false;
+      }
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+</script>
 </body>
 </html>
