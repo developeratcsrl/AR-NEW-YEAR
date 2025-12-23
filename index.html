@@ -614,45 +614,56 @@ function render(time) {
 
 
 
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>3D AR Happy New Year</title>
+    <title>3D AR New Year 2026</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <script src="https://unpkg.com/aframe-text-geometry-component@0.5.1/dist/aframe-text-geometry-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-particle-system-component@1.1.3/dist/aframe-particle-system-component.min.js"></script>
 </head>
 
 <body style="margin: 0; overflow: hidden;">
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
         
         <a-assets>
-            <a-asset-item id="optimer" src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/fonts/helvetiker_bold.typeface.json"></a-asset-item>
+            <a-asset-item id="optimerBold" src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/fonts/helvetiker_bold.typeface.json"></a-asset-item>
         </a-assets>
 
-        <a-entity 
-            id="text3D"
-            position="-2.5 0.5 -5" 
-            text-geometry="value: HAPPY 2025; font: #optimer; height: 0.5; bevelEnabled: true; bevelSize: 0.05; bevelThickness: 0.05;" 
-            material="color: #FFD700; metalness: 0.8; roughness: 0.2;"
-            animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; loop: true; dur: 800">
+        <a-entity position="0 0 -8">
+            
+            <a-entity 
+                position="-1.8 1.5 0" 
+                text-geometry="value: Happy; font: #optimerBold; height: 0.5; bevelEnabled: true; bevelSize: 0.04;" 
+                material="color: #FFD700; metalness: 0.8; roughness: 0.2">
+            </a-entity>
+
+            <a-entity 
+                position="-2.5 0 0" 
+                text-geometry="value: New Year; font: #optimerBold; height: 0.5; bevelEnabled: true; bevelSize: 0.04;" 
+                material="color: #FFD700; metalness: 0.8; roughness: 0.2">
+            </a-entity>
+
+            <a-entity 
+                position="-1.2 -1.5 0" 
+                text-geometry="value: 2026; font: #optimerBold; height: 0.7; bevelEnabled: true; bevelSize: 0.05;" 
+                material="color: #FF4500; metalness: 0.9; roughness: 0.1"
+                animation="property: scale; to: 1.2 1.2 1.2; dir: alternate; loop: true; dur: 500">
+            </a-entity>
+
         </a-entity>
 
-        <a-entity position="0 2 -8">
-            <a-sphere position="-2 0 0" radius="0.1" color="red">
-                <a-animation attribute="scale" to="10 10 10" dur="1000" fill="forwards" repeat="indefinite"></a-animation>
-            </a-sphere>
-            <a-sphere position="2 1 0" radius="0.1" color="blue">
-                <a-animation attribute="scale" to="8 8 8" dur="1200" fill="forwards" repeat="indefinite"></a-animation>
-            </a-sphere>
-            <a-sphere position="0 3 -2" radius="0.1" color="yellow">
-                <a-animation attribute="scale" to="12 12 12" dur="1500" fill="forwards" repeat="indefinite"></a-animation>
-            </a-sphere>
-        </a-entity>
+        <a-entity position="0 2 -12" particle-system="color: #FFD700,#FFFFFF; particleCount: 2000; size: 0.5; velocityValue: 0 10 0; velocitySpread: 15 15 15; accelerationValue: 0 -5 0"></a-entity>
+        
+        <a-entity position="-6 3 -10" particle-system="color: #FF0000,#FF00FF; particleCount: 1000; size: 0.4; velocitySpread: 12 12 12; accelerationValue: 0 -3 0"></a-entity>
+        
+        <a-entity position="6 3 -10" particle-system="color: #00FF00,#00FFFF; particleCount: 1000; size: 0.4; velocitySpread: 12 12 12; accelerationValue: 0 -3 0"></a-entity>
 
-        <a-light type="ambient" intensity="1"></a-light>
-        <a-light type="point" position="1 1 1"></a-light>
+        <a-entity position="0 8 -15" particle-system="color: #FFFFFF; particleCount: 500; size: 0.2; velocityValue: 0 -2 0; opacity: 0.5"></a-entity>
+
+        <a-light type="ambient" intensity="0.8"></a-light>
+        <a-light type="point" position="2 4 4" intensity="1"></a-light>
 
         <a-camera-static></a-camera-static>
     </a-scene>
