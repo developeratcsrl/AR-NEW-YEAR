@@ -544,7 +544,7 @@ function render(time) {
 
 
 
-
+<!-- 
 <!DOCTYPE html>
 <html>
 <head>
@@ -577,35 +577,79 @@ function render(time) {
         <a-camera-static />
     </a-scene>
 </body>
-</html>
+</html> -->
 
 
 
 
 
-<!-- <!DOCTYPE html>
+
+<!DOCTYPE html>
 <html>
 <head>
-    <title>3D New Year AR</title>
+    <title>3D Happy New Year AR</title>
+
+    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+
+    <!-- AR.js -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <script src="https://unpkg.com/aframe-text-geometry-component@0.5.1/dist/aframe-text-geometry-component.min.js"></script>
+
+    <!-- Particle System -->
+    <script src="https://unpkg.com/aframe-particle-system-component@1.0.0/dist/aframe-particle-system-component.min.js"></script>
 </head>
+
 <body style="margin: 0; overflow: hidden;">
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        
-        <a-assets>
-            <a-asset-item id="optimerBold" src="https://rawgit.com/mrdoob/three.js/master/examples/fonts/helvetiker_bold.typeface.json"></a-asset-item>
-        </a-assets>
 
-        <a-entity 
-            position="-2.5 0 -5" 
-            rotation="-10 10 0"
-            text-geometry="value: Happy New Year; font: #optimerBold; height: 0.5; bevelEnabled: true; bevelSize: 0.05; bevelThickness: 0.05;" 
-            material="color: #FFD700; metalness: 0.8; roughness: 0.2; red: 255;">
+        <!-- Text Group -->
+        <a-entity position="0 0 -5">
+
+            <!-- HAPPY -->
+            <a-text
+                value="HAPPY"
+                color="#FFD700"
+                align="center"
+                width="8"
+                position="0 1 0"
+                font="https://cdn.aframe.io/fonts/Exo2Bold.fnt">
+            </a-text>
+
+            <!-- NEW YEAR -->
+            <a-text
+                value="NEW YEAR"
+                color="#FF4500"
+                align="center"
+                width="10"
+                position="0 0 0"
+                font="https://cdn.aframe.io/fonts/Exo2Bold.fnt">
+            </a-text>
+
+            <!-- 2026 -->
+            <a-text
+                value="2026"
+                color="#00FFFF"
+                align="center"
+                width="6"
+                position="0 -1 0"
+                font="https://cdn.aframe.io/fonts/Exo2Bold.fnt">
+            </a-text>
+
+        </a-entity>
+
+        <!-- Fireworks -->
+        <a-entity
+            position="0 2 -5"
+            particle-system="
+                preset: fireworks;
+                particleCount: 300;
+                size: 1;
+                color: #FFD700, #FF4500, #00FFFF, #FF00FF;
+                duration: 4;
+                loop: true;">
         </a-entity>
 
         <a-camera-static></a-camera-static>
     </a-scene>
 </body>
-</html> -->
+</html>
