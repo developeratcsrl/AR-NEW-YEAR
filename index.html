@@ -613,92 +613,49 @@ function render(time) {
 
 
 
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>GPS AR - Happy New Year 2026</title>
+    <title>GPS AR 2026</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-    <script src="https://unpkg.com/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
+    <script>
+        // This script finds your location and puts the text there
+        window.onload = () => {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const el = document.querySelector('[gps-entity-place]');
+                el.setAttribute('gps-entity-place', `latitude: ${position.coords.latitude}; longitude: ${position.coords.longitude};`);
+                console.log("Location set to:", position.coords.latitude, position.coords.longitude);
+            });
+        };
+    </script>
 </head>
 <body style="margin: 0; overflow: hidden;">
     <a-scene 
-        vr-mode-ui="enabled: false" 
-        embedded 
+        vr-mode-ui="enabled: false"
+        embedded
         arjs="sourceType: webcam; debugUIEnabled: false;">
 
-        <a-text
-            value="HAPPY\nNEW YEAR\n2026"
-            look-at="[gps-camera]"
-            scale="50 50 50"
-            align="center"
-            color="#FFD700"
-            position="0 10 0"
-            gps-entity-place="latitude: 51.5074; longitude: -0.1278;">
-        </a-text>
-
         <a-entity 
-            gps-entity-place="latitude: 51.5074; longitude: -0.1278;"
-            position="0 15 -20"
-            particle-system="preset: snow; color: #ff0000,#ffff00,#ffffff; particleCount: 5000; size: 1; velocityValue: 0 10 0; accelerationValue: 0 -5 0">
+            id="newyear-text"
+            gps-entity-place="latitude: 0; longitude: 0;" 
+            position="0 30 -50"
+            scale="40 40 40">
+            <a-text 
+                value="HAPPY\nNEW YEAR\n2026" 
+                align="center" 
+                color="#FFD700" 
+                font="https://cdn.aframe.io/fonts/Exo2Bold.fnt">
+            </a-text>
+            
+            <a-ring color="orange" radius-inner="1" radius-outer="1.2" rotation="-90 0 0">
+                <a-animation attribute="scale" from="1 1 1" to="10 10 10" dur="1000" repeat="indefinite"></a-animation>
+                <a-animation attribute="opacity" from="1" to="0" dur="1000" repeat="indefinite"></a-animation>
+            </a-ring>
         </a-entity>
 
         <a-camera gps-camera rotation-reader></a-camera>
-    </a-scene>
-</body>
-</html>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>3D AR New Year 2026</title>
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <script src="https://unpkg.com/aframe-text-geometry-component@0.5.1/dist/aframe-text-geometry-component.min.js"></script>
-    <script src="https://unpkg.com/aframe-particle-system-component@1.1.3/dist/aframe-particle-system-component.min.js"></script>
-</head>
-
-<body style="margin: 0; overflow: hidden;">
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
-        
-        <a-assets>
-            <a-asset-item id="optimerBold" src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/fonts/helvetiker_bold.typeface.json"></a-asset-item>
-        </a-assets>
-
-        <a-entity position="0 0 -8">
-            
-            <a-entity 
-                position="-1.8 1.5 0" 
-                text-geometry="value: Happy; font: #optimerBold; height: 0.5; bevelEnabled: true; bevelSize: 0.04;" 
-                material="color: #FFD700; metalness: 0.8; roughness: 0.2">
-            </a-entity>
-
-            <a-entity 
-                position="-2.5 0 0" 
-                text-geometry="value: New Year; font: #optimerBold; height: 0.5; bevelEnabled: true; bevelSize: 0.04;" 
-                material="color: #FFD700; metalness: 0.8; roughness: 0.2">
-            </a-entity>
-
-            <a-entity 
-                position="-1.2 -1.5 0" 
-                text-geometry="value: 2026; font: #optimerBold; height: 0.7; bevelEnabled: true; bevelSize: 0.05;" 
-                material="color: #FF4500; metalness: 0.9; roughness: 0.1"
-                animation="property: scale; to: 1.2 1.2 1.2; dir: alternate; loop: true; dur: 500">
-            </a-entity>
-
-        </a-entity>
-
-        <a-entity position="0 2 -12" particle-system="color: #FFD700,#FFFFFF; particleCount: 2000; size: 0.5; velocityValue: 0 10 0; velocitySpread: 15 15 15; accelerationValue: 0 -5 0"></a-entity>
-        
-        <a-entity position="-6 3 -10" particle-system="color: #FF0000,#FF00FF; particleCount: 1000; size: 0.4; velocitySpread: 12 12 12; accelerationValue: 0 -3 0"></a-entity>
-        
-        <a-entity position="6 3 -10" particle-system="color: #00FF00,#00FFFF; particleCount: 1000; size: 0.4; velocitySpread: 12 12 12; accelerationValue: 0 -3 0"></a-entity>
-
-        <a-entity position="0 8 -15" particle-system="color: #FFFFFF; particleCount: 500; size: 0.2; velocityValue: 0 -2 0; opacity: 0.5"></a-entity>
-
-        <a-light type="ambient" intensity="0.8"></a-light>
-        <a-light type="point" position="2 4 4" intensity="1"></a-light>
-
-        <a-camera-static></a-camera-static>
     </a-scene>
 </body>
 </html>
