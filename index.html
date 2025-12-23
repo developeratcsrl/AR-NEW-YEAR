@@ -584,72 +584,55 @@ function render(time) {
 
 
 
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>3D Happy New Year AR</title>
-
-    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-
-    <!-- AR.js -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-
-    <!-- Particle System -->
     <script src="https://unpkg.com/aframe-particle-system-component@1.0.0/dist/aframe-particle-system-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-text-geometry-component@0.5.1/dist/aframe-text-geometry-component.min.js"></script>
 </head>
 
 <body style="margin: 0; overflow: hidden;">
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+        
+        <a-assets>
+            <a-asset-item id="exoFont" src="https://cdn.glitch.com/c717ca34-4574-4050-bc32-9701ca706856%2Fexo2Black.json?v=1569855991192"></a-asset-item>
+        </a-assets>
 
-        <!-- Text Group -->
-        <a-entity position="0 0 -5">
+        <a-entity position="-2 0 -6">
+            
+            <a-entity 
+                text-geometry="value: HAPPY; font: #exoFont; size: 0.8; height: 0.2;" 
+                material="color: #FFD700; metalness: 0.8; roughness: 0.2;"
+                position="0 1.5 0">
+            </a-entity>
 
-            <!-- HAPPY -->
-            <a-text
-                value="HAPPY"
-                color="#FFD700"
-                align="center"
-                width="8"
-                position="0 1 0"
-                font="https://cdn.aframe.io/fonts/Exo2Bold.fnt">
-            </a-text>
+            <a-entity 
+                text-geometry="value: NEW YEAR; font: #exoFont; size: 0.8; height: 0.2;" 
+                material="color: #FF4500; metalness: 0.8; roughness: 0.2;"
+                position="0 0.5 0">
+            </a-entity>
 
-            <!-- NEW YEAR -->
-            <a-text
-                value="NEW YEAR"
-                color="#FF4500"
-                align="center"
-                width="10"
-                position="0 0 0"
-                font="https://cdn.aframe.io/fonts/Exo2Bold.fnt">
-            </a-text>
-
-            <!-- 2026 -->
-            <a-text
-                value="2026"
-                color="#00FFFF"
-                align="center"
-                width="6"
-                position="0 -1 0"
-                font="https://cdn.aframe.io/fonts/Exo2Bold.fnt">
-            </a-text>
+            <a-entity 
+                text-geometry="value: 2026; font: #exoFont; size: 1.2; height: 0.3;" 
+                material="color: #00FFFF; metalness: 0.8; roughness: 0.2;"
+                position="0.5 -1 0">
+            </a-entity>
 
         </a-entity>
 
-        <!-- Fireworks -->
-        <a-entity
-            position="0 2 -5"
-            particle-system="
-                preset: fireworks;
-                particleCount: 300;
-                size: 1;
-                color: #FFD700, #FF4500, #00FFFF, #FF00FF;
-                duration: 4;
-                loop: true;">
+        <a-entity 
+            position="0 3 -8" 
+            particle-system="preset: fireworks; color: #FFD700,#FF4500,#00FFFF; particleCount: 500; size: 0.5; velocityValue: 0 10 0;">
         </a-entity>
 
-        <a-camera-static></a-camera-static>
+        <a-light type="ambient" color="#FFF"></a-light>
+        <a-light type="directional" color="#FFF" intensity="0.5" position="-1 1 2"></a-light>
+
+        <a-entity camera></a-entity>
     </a-scene>
 </body>
 </html>
